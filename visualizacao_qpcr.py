@@ -59,9 +59,9 @@ if uploaded_file:
     "Condição da enzima",
     "Data",
     "classificação"
-    ]
+]
 
-    for var in variaveis_para_analise:
+for var in variaveis_para_analise:
     if var in df_filtrado.columns:
         with st.expander(f"📌 Frequência de {var.capitalize()}"):
             freq = df_filtrado[var].value_counts(dropna=False).reset_index()
