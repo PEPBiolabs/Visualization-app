@@ -1,5 +1,3 @@
-
-# Novo app para visualização exploratória da base consolidada
 try:
     import streamlit as st
 except:
@@ -18,10 +16,18 @@ uploaded_file = st.file_uploader("Envie o CSV consolidado dos resultados", type=
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
 
+    # Corrige cabeçalhos e vírgulas como separador decimal
+    df.columns = df.columns.str.strip().str.replace('\ufeff', '')
+    if "Nota" in df.columns:
+        df["Nota"] = df["Nota"].astype(str).str.replace(",", ".").astype(float)
+    else:
+        st.error("A coluna 'Nota' não foi encontrada no arquivo CSV.")
+        st.stop()
+
     st.sidebar.markdown("### 🎚️ Filtros")
-    nota_min = st.sidebar.slider("Nota mínima", float(df['Nota'].min()), 10.0, 7.0, 0.1)
+    nota_min = st.sidebar.slider("Nota mínima", float(df["Nota"].min()), 10.0, 7.0, 0.1)
     nota_max = st.sidebar.slider("Nota máxima", nota_min, 10.0, 10.0, 0.1)
-    df_filtrado = df[(df['Nota'] >= nota_min) & (df['Nota'] <= nota_max)]
+    df_filtrado = df[(df["Nota"] >= nota_min) & (df["Nota"] <= nota_max)]
 
     col_x = st.sidebar.selectbox("Eixo X", df.columns, index=df.columns.get_loc("Nota") if "Nota" in df.columns else 0)
     col_y = st.sidebar.selectbox("Eixo Y", df.columns, index=df.columns.get_loc("Nota") if "Nota" in df.columns else 1)
