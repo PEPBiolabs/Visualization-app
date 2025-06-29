@@ -1,6 +1,6 @@
 
 # Novo app para visualização exploratória da base consolidada
-tente:
+try:
     import streamlit as st
 except:
     import subprocess, sys
@@ -30,7 +30,7 @@ if uploaded_file:
     st.markdown("### 📈 Gráfico de dispersão")
     fig = px.scatter(df_filtrado, x=col_x, y=col_y, color=cor,
                      hover_data=df.columns,
-                     title="Dispersão filtrada das reacoes de qPCR")
+                     title="Dispersão filtrada das reações de qPCR")
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("### 🧮 Frequências das variáveis no grupo filtrado")
