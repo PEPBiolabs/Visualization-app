@@ -51,22 +51,23 @@ if uploaded_file:
 
     st.markdown("## 📊 Frequências das variáveis no grupo filtrado")
 
-    variaveis_para_analise = [
-    "Cepa",
-    "Aditivos na enzima",
-    "Indução",
-    "Tampão da enzima",
-    "Condição da enzima",
-    "Data",
+variaveis_para_analise = [
+    "cepa",
+    "aditivos na enzima",
+    "indução",
+    "tampão da enzima",
+    "condição da enzima",
+    "data",
     "classificação"
 ]
 
 for var in variaveis_para_analise:
     if var in df_filtrado.columns:
-        with st.expander(f"📌 Frequência de {var.capitalize()}"):
-            freq = df_filtrado[var].value_counts(dropna=False).reset_index()
-            freq.columns = [var, "Frequência"]
-            st.dataframe(freq)
+        st.markdown(f"**{var.capitalize()}**")
+        freq = df_filtrado[var].value_counts(dropna=False).reset_index()
+        freq.columns = [var, "Frequência"]
+        st.dataframe(freq)
+
 
     csv = df.to_csv(index=False).encode("utf-8")
     st.download_button("Baixar CSV filtrado", data=csv, file_name="grupo_filtrado.csv", mime="text/csv")
