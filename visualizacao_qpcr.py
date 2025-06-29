@@ -31,27 +31,7 @@ if uploaded_file:
     nota_max = st.sidebar.slider("Nota máxima", nota_min, 10.0, 10.0, 0.1)
     df = df[(df["Nota"] >= nota_min) & (df["Nota"] <= nota_max)]
 
-    # Filtros adicionais por variáveis categóricas, se existirem
-    for var in ["cepa", "aditivos na enzima", "indução", "tampão da enzima", "condição da enzima", "data"]:
-        if var in df.columns:
-            opcoes = df[var].dropna().unique().tolist()
-            selecao = st.sidebar.multiselect(f"Filtrar por {var}", options=opcoes, default=opcoes)
-            df = df[df[var].isin(selecao)]
-
-    # Controles para gráfico
-    col_x = st.sidebar.selectbox("Eixo X", df.columns, index=df.columns.get_loc("Nota") if "Nota" in df.columns else 0)
-    col_y = st.sidebar.selectbox("Eixo Y", df.columns, index=df.columns.get_loc("Nota") if "Nota" in df.columns else 1)
-    cor = st.sidebar.selectbox("Colorir por", df.columns, index=df.columns.get_loc("classificação") if "classificação" in df.columns else 0)
-
-    st.markdown("### 📈 Gráfico de dispersão")
-    fig = px.scatter(df, x=col_x, y=col_y, color=cor,
-                     hover_data=df.columns,
-                     title="Dispersão filtrada das reações de qPCR")
-    st.plotly_chart(fig, use_container_width=True)
-
-    # Frequência das variáveis categóricas
-    st.markdown("## 📊 Frequências das variáveis no grupo filtrado")
-
+    # Filtros adicionais por variáveis categóricas
     variaveis_para_analise = [
         "Cepa",
         "Aditivos na enzima",
@@ -64,10 +44,29 @@ if uploaded_file:
 
     for var in variaveis_para_analise:
         if var in df.columns:
+            opcoes = df[var].dropna().unique().tolist()
+            selecao = st.sidebar.multiselect(f"Filtrar por {var}", options=opcoes, default=opcoes)
+            df = df[df[var].isin(selecao)]
+
+    # Controles do gráfico
+    col_x = st.sidebar.selectbox("Eixo X", df.columns, index=df.columns.get_loc("Nota") if "Nota" in df.columns else 0)
+    col_y = st.sidebar.selectbox("Eixo Y", df.columns, index=df.columns.get_loc("Nota") if "Nota" in df.columns else 1)
+    cor = st.sidebar.selectbox("Colorir por", df.columns, index=df.columns.get_loc("classificação") if "classificação" in df.columns else 0)
+
+    st.markdown("### 📈 Gráfico de dispersão")
+    fig = px.scatter(df, x=col_x, y=col_y, color=cor, hover_data=df.columns, title="Dispersão das reações de qPCR")
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Frequência das variáveis
+    st.markdown("## 📊 Frequências das variáveis no grupo filtrado")
+
+    for var in variaveis_para_analise:
+        if var in df.columns:
             st.markdown(f"**{var.capitalize()}**")
             freq = df[var].value_counts(dropna=False).reset_index()
             freq.columns = [var, "Frequência"]
             st.dataframe(freq)
 
+    # Exportação do grupo filtrado
     csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button("Baixar CSV filtrado", data=csv, file_name="grupo_filtrado.csv", mime="text/csv")
+    st.download_button("📥 Baixar CSV filtrado", data=csv, file_name="grupo_filtrado.csv", mime="text/csv")
