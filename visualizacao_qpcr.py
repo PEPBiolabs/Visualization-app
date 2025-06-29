@@ -19,7 +19,7 @@ if uploaded_file:
     # Corrige cabeçalhos e vírgulas como separador decimal
     df.columns = df.columns.str.strip().str.replace('\ufeff', '')
     if "Nota" in df.columns:
-df["Nota"] = df["Nota"].astype(str).str.replace(",", ".", regex=False).astype(float)
+        df["Nota"] = df["Nota"].astype(str).str.replace(",", ".", regex=False).astype(float)
     else:
         st.error("A coluna 'Nota' não foi encontrada no arquivo CSV.")
         st.stop()
