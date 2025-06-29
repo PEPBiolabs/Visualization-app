@@ -1,0 +1,47 @@
+
+# Novo app para visualização exploratória da base consolidada
+tente:
+    import streamlit as st
+except:
+    import subprocess, sys
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "streamlit"])
+    import streamlit as st
+
+import pandas as pd
+import plotly.express as px
+
+st.set_page_config(page_title="Visualização Consolidada qPCR", layout="wide")
+st.title("🔬 Visualização Interativa dos Resultados de qPCR")
+
+uploaded_file = st.file_uploader("Envie o CSV consolidado dos resultados", type="csv")
+
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+
+    st.sidebar.markdown("### 🎚️ Filtros")
+    nota_min = st.sidebar.slider("Nota mínima", float(df['Nota'].min()), 10.0, 7.0, 0.1)
+    nota_max = st.sidebar.slider("Nota máxima", nota_min, 10.0, 10.0, 0.1)
+    df_filtrado = df[(df['Nota'] >= nota_min) & (df['Nota'] <= nota_max)]
+
+    col_x = st.sidebar.selectbox("Eixo X", df.columns, index=df.columns.get_loc("Nota") if "Nota" in df.columns else 0)
+    col_y = st.sidebar.selectbox("Eixo Y", df.columns, index=df.columns.get_loc("Nota") if "Nota" in df.columns else 1)
+    cor = st.sidebar.selectbox("Colorir por", df.columns, index=df.columns.get_loc("Classificacao") if "Classificacao" in df.columns else 0)
+
+    st.markdown("### 📈 Gráfico de dispersão")
+    fig = px.scatter(df_filtrado, x=col_x, y=col_y, color=cor,
+                     hover_data=df.columns,
+                     title="Dispersão filtrada das reacoes de qPCR")
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("### 🧮 Frequências das variáveis no grupo filtrado")
+    col1, col2, col3 = st.columns(3)
+    for col, nome in zip([col1, col2, col3], ["Cepa", "Aditivo", "Inducao"]):
+        if nome in df_filtrado.columns:
+            with col:
+                st.markdown(f"**{nome}**")
+                freq = df_filtrado[nome].value_counts().reset_index()
+                freq.columns = [nome, "Frequência"]
+                st.dataframe(freq)
+
+    csv = df_filtrado.to_csv(index=False).encode("utf-8")
+    st.download_button("Baixar CSV filtrado", data=csv, file_name="grupo_filtrado.csv", mime="text/csv")
