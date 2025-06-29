@@ -52,12 +52,12 @@ if uploaded_file:
     st.markdown("## 📊 Frequências das variáveis no grupo filtrado")
 
     variaveis_para_analise = [
-    "cepa",
-    "aditivos na enzima",
-    "indução",
-    "tampão da enzima",
-    "condição da enzima",
-    "data",
+    "Cepa",
+    "Aditivos na enzima",
+    "Indução",
+    "Tampão da enzima",
+    "Condição da enzima",
+    "Data",
     "classificação"
     ]
 
