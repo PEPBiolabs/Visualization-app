@@ -62,9 +62,9 @@ variaveis_para_analise = [
 ]
 
 for var in variaveis_para_analise:
-    if var in df_filtrado.columns:
+    if var in df.columns:
         st.markdown(f"**{var.capitalize()}**")
-        freq = df_filtrado[var].value_counts(dropna=False).reset_index()
+        freq = df[var].value_counts(dropna=False).reset_index()
         freq.columns = [var, "Frequência"]
         st.dataframe(freq)
 
