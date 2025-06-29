@@ -49,15 +49,24 @@ if uploaded_file:
                      title="Dispersão filtrada das reações de qPCR")
     st.plotly_chart(fig, use_container_width=True)
 
-    st.markdown("### 🧮 Frequências das variáveis no grupo filtrado")
-    col1, col2, col3 = st.columns(3)
-    for col, nome in zip([col1, col2, col3], ["Cepa", "Aditivo", "Inducao"]):
-        if nome in df.columns:
-            with col:
-                st.markdown(f"**{nome}**")
-                freq = df[nome].value_counts().reset_index()
-                freq.columns = [nome, "Frequência"]
-                st.dataframe(freq)
+    st.markdown("## 📊 Frequências das variáveis no grupo filtrado")
+
+    variaveis_para_analise = [
+    "cepa",
+    "aditivos na enzima",
+    "indução",
+    "tampão da enzima",
+    "condição da enzima",
+    "data",
+    "classificação"
+    ]
+
+    for var in variaveis_para_analise:
+    if var in df_filtrado.columns:
+        with st.expander(f"📌 Frequência de {var.capitalize()}"):
+            freq = df_filtrado[var].value_counts(dropna=False).reset_index()
+            freq.columns = [var, "Frequência"]
+            st.dataframe(freq)
 
     csv = df.to_csv(index=False).encode("utf-8")
     st.download_button("Baixar CSV filtrado", data=csv, file_name="grupo_filtrado.csv", mime="text/csv")
